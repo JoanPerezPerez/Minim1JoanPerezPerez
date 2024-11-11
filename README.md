@@ -8,5 +8,4 @@ Al llarg del mini 1 s'han creat els objectes PuntoInteres, Usuario i Registro. S
     List<PuntoInteres> getUserVisitedPoints(String userId);-->ens dona els punts visitats per l'usuari
     List<Usuario> getUsersByPoint(int x, int y) throws EmptyPointListException;--> ens dona els usuaris per punt
     List<PuntoInteres> getPointsByType(ElementType type);--> ens dona els punts per tipus
-
     Finalment, el test de Junit m'ha fallat en la funció puntosInteresElementType(), apart d'això he iniciat el GameService (però no acabat), el qual ens ajuda a implementar el REST.
