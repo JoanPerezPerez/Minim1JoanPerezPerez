@@ -79,8 +79,11 @@ public class GameManagerImpl implements GameManager {
     }
 
     @Override
-    public List<Usuario> getUsersByPoint(int x, int y) {
+    public List<Usuario> getUsersByPoint(int x, int y) throws EmptyPointListException {
         logger.info("getUsersByPoint - Ingreso: x=" + x + ", y=" + y);
+        if (registro.getUsersByPoint(x, y) == null){
+            throw new EmptyPointListException("No hay usuarios en ese punto.");
+        }
         return registro.getUsersByPoint(x, y);
     }
 
