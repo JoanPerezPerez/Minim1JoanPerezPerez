@@ -15,6 +15,7 @@ import java.util.List;
 public class GameManagerTest {
     GameManager gm;
 
+
     @Before
     public void setUp() throws EmptyPointListException {
         this.gm = GameManagerImpl.getInstance();
@@ -24,6 +25,9 @@ public class GameManagerTest {
         this.gm.addPointOfInterest(22,25, ElementType.DOOR);
         this.gm.addPointOfInterest(15,33, ElementType.GRASS);
         this.gm.addPointOfInterest(22,25, ElementType.BRIDGE);
+
+
+
         this.gm.registerPointVisit("s123", 22, 25);
     }
 
@@ -73,13 +77,27 @@ public class GameManagerTest {
     }
     @Test
     public void puntosInteresElementType() {
-        List<PuntoInteres> puntos = gm.getPointsByType(ElementType.BRIDGE);
-        Assert.assertEquals(puntos.size(), 1);  // Verifica que la lista tenga 1 elemento
-    //fallo
+        this.gm.addPointOfInterest(0, 0, ElementType.GRASS);
+        this.gm.addPointOfInterest(1, 1, ElementType.TREE);
+        this.gm.addPointOfInterest(2, 2, ElementType.GRASS);
+        this.gm.addPointOfInterest(3, 3, ElementType.BRIDGE);
+
+        // Invocar el método para obtener puntos del tipo GRASS
+        List<PuntoInteres> puntosGrass = gm.getPointsByType(ElementType.GRASS);
+
+        List<PuntoInteres> puntosBridge = gm.getPointsByType(ElementType.BRIDGE);
+        // Verificar que la lista no sea nula
+        Assert.assertNotNull("La lista de puntos tipo GRASS no debería ser nula", puntosGrass);
+        Assert.assertNotNull("La lista de puntos tipo GRASS no debería ser nula", puntosBridge);
+        // Verificar el tamaño de la lista
+        Assert.assertEquals("El número de puntos tipo GRASS no es el esperado", 3, puntosGrass.size());
+        Assert.assertEquals("El número de puntos tipo GRASS no es el esperado", 2, puntosBridge.size());
+        // Verificar que todos los puntos sean del tipo GRASS
+        for (PuntoInteres punto : puntosGrass) {
+            Assert.assertEquals("El tipo del punto no es GRASS", ElementType.GRASS, punto.getType());
+        }
+        for (PuntoInteres punto : puntosBridge) {
+            Assert.assertEquals("El tipo del punto no es Bridge", ElementType.BRIDGE, punto.getType());
+        }
     }
-
-
-
-
-
 }
