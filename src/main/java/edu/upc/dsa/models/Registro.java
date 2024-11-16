@@ -1,84 +1,90 @@
 package edu.upc.dsa.models;
+
+import edu.upc.dsa.models.ElementType;
+import edu.upc.dsa.models.PuntoInteres;
+import edu.upc.dsa.models.Usuario;
+
 import java.util.*;
 
 public class Registro {
-    private Set<PuntoInteres> puntosInteres; // Conjunto de puntos de interés registrados
-    private Set<Integer> usuarios; // Conjunto de IDs de usuarios registrados
-    private Map<Integer, List<PuntoInteres>> historialVisitas;// Historial de visitas de cada usuario
-    private Map<String, List<Integer>> usuariosPorPunto;
 
-    // Constructor que inicializa los conjuntos de usuarios y puntos de interés
+    private Map<String, Usuario> usuarios;
+    private Set<PuntoInteres> puntosInteres;
+    private Map<String, List<PuntoInteres>> visitasUsuarios;
+    private Map<PuntoInteres, List<String>> usuariosPorPunto;
+
     public Registro() {
+        this.usuarios = new HashMap<>();
         this.puntosInteres = new HashSet<>();
-        this.usuarios = new HashSet<>();
-        this.historialVisitas = new HashMap<>();
+        this.visitasUsuarios = new HashMap<>();
         this.usuariosPorPunto = new HashMap<>();
     }
 
-    // Metodo para registrar un nuevo usuario por su ID
-    public void registrarUsuario(int userId) {
-        usuarios.add(userId);
-        historialVisitas.put(userId, new ArrayList<>()); // Inicializa el historial de visitas
+    public void addUser(String id, String name, String surname, String fechaNacimiento) {
+        Usuario usuario = new Usuario(id, name, surname, fechaNacimiento);
+        usuarios.put(id, usuario);
+        visitasUsuarios.put(id, new ArrayList<>());
     }
 
-    // Metodo para añadir un punto de interés al conjunto
-    public void agregarPuntoInteres(PuntoInteres punto) {
+    public Usuario getUser(String id) {
+        return usuarios.get(id);
+    }
+
+    public List<Usuario> getUsersOrderedAlphabetically() {
+        List<Usuario> listaUsuarios = new ArrayList<>(usuarios.values());
+        listaUsuarios.sort(Comparator.comparing(Usuario::getSurname).thenComparing(Usuario::getName));
+        return listaUsuarios;
+    }
+
+    public void addPointOfInterest(int x, int y, ElementType type) {
+        PuntoInteres punto = new PuntoInteres(x, y, type);
         puntosInteres.add(punto);
+        usuariosPorPunto.put(punto, new ArrayList<>());
     }
 
-    // Metodo para registrar el paso de un usuario por un punto de interés
-    public String registrarPaso(int userId, int x, int y) {
-        // Verificar si el usuario está registrado
-        if (!usuarios.contains(userId)) {
-            return "Error: Usuario con ID " + userId + " no está registrado.";
-        }
+    public boolean registerPointVisit(String userId, int x, int y) {
+        Usuario usuario = usuarios.get(userId);
+        PuntoInteres punto = getPuntoInteres(x, y);
 
-        // Verificar si el punto de interés existe en esas coordenadas
-        PuntoInteres punto = buscarPuntoInteres(x, y);
-        if (punto == null) {
-            return "Error: No existe un punto de interés en las coordenadas (" + x + ", " + y + ").";
+        if (usuario != null && punto != null) {
+            visitasUsuarios.get(userId).add(punto);
+            usuariosPorPunto.get(punto).add(userId);
+            return true;
         }
-
-        // Registrar el paso en el historial del usuario
-        historialVisitas.get(userId).add(punto);
-        return "Usuario con ID " + userId + " ha pasado por el punto de interés en (" + x + ", " + y + ").";
+        else{
+        return false;}
     }
 
-    // Metodo para consultar los puntos de interés visitados por un usuario en el orden registrado
-    public List<PuntoInteres> consultarHistorial(int userId) throws EmptyPointListException {
-        if (!usuarios.contains(userId)) {
-            throw new EmptyPointListException("Empty product list");
-        }
-        return historialVisitas.get(userId);
+    public List<PuntoInteres> getUserVisitedPoints(String userId) {
+        return visitasUsuarios.getOrDefault(userId, new ArrayList<>());
     }
 
-    public List<Integer> consultarUsuariosPorPunto(int x, int y) {
-        String coordenadas = x + "," + y;
-
-        // Verificar si el punto de interés existe
-        if (!usuariosPorPunto.containsKey(coordenadas)) {
-            System.out.println("Error: No existe un punto de interés en las coordenadas (" + x + ", " + y + ").");
-            return Collections.emptyList();
+    public List<Usuario> getUsersByPoint(int x, int y) {
+        PuntoInteres punto = getPuntoInteres(x, y);
+        List<String> userIds = usuariosPorPunto.getOrDefault(punto, new ArrayList<>());
+        List<Usuario> usuariosQuePasaron = new ArrayList<>();
+        for (String id : userIds) {
+            usuariosQuePasaron.add(usuarios.get(id));
         }
-
-        return usuariosPorPunto.get(coordenadas);
+        return usuariosQuePasaron;
     }
-    // Metodo privado para buscar un punto de interés por coordenadas
-    private PuntoInteres buscarPuntoInteres(int x, int y) {
+
+    public List<PuntoInteres> getPointsByType(ElementType type) {
+        List<PuntoInteres> puntosDelTipo = new ArrayList<>();
+        for (PuntoInteres punto : puntosInteres) {
+            if (punto.getType() == type) {
+                puntosDelTipo.add(punto);
+            }
+        }
+        return puntosDelTipo;
+    }
+
+    private PuntoInteres getPuntoInteres(int x, int y) {
         for (PuntoInteres punto : puntosInteres) {
             if (punto.getX() == x && punto.getY() == y) {
                 return punto;
             }
         }
         return null;
-    }
-    public List<PuntoInteres> consultarPuntosPorTipo(ElementType tipo) {
-        List<PuntoInteres> puntosDelTipo = new ArrayList<>();
-        for (PuntoInteres punto : puntosInteres) {
-            if (punto.getType() == tipo) {
-                puntosDelTipo.add(punto);
-            }
-        }
-        return puntosDelTipo;
     }
 }

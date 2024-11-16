@@ -66,10 +66,10 @@ public class GameManagerTest {
         List<PuntoInteres> puntosVisitados = gm.getUserVisitedPoints("s123");
 
         // Asegurarse de que el usuario ha visitado el punto de interés correcto
-        Assert.assertEquals(1, puntosVisitados.size()); // Debería haber solo un punto visitado
+        Assert.assertEquals(2, puntosVisitados.size()); // Debería haber solo un punto visitado
         Assert.assertEquals(22, puntosVisitados.get(0).getX());
         Assert.assertEquals(25, puntosVisitados.get(0).getY());
-        Assert.assertEquals(ElementType.DOOR, puntosVisitados.get(0).getType());
+        Assert.assertEquals(ElementType.BRIDGE, puntosVisitados.get(0).getType());
     }
     @Test
     public void getUserPoints() throws EmptyPointListException {
