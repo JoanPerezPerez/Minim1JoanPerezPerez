@@ -51,7 +51,7 @@ public class GameManagerImpl implements GameManager {
     }
 
     @Override
-    public void registerPointVisit(String userId, int x, int y) throws EmptyPointListException {
+    public boolean registerPointVisit(String userId, int x, int y) throws EmptyPointListException {
         Usuario usuario = usuarios.get(userId);
         PuntoInteres punto = getPuntoInteres(x, y);
 
@@ -61,9 +61,11 @@ public class GameManagerImpl implements GameManager {
         if (punto == null) {
             throw new EmptyPointListException("Punto de interés no encontrado.");
         }
-
-        visitasUsuarios.get(userId).add(punto); // Registrar la visita del usuario al punto
-        usuariosPorPunto.get(punto).add(userId); // Registrar que el usuario ha pasado por este punto
+        else{
+            visitasUsuarios.get(userId).add(punto); // Registrar la visita del usuario al punto
+            usuariosPorPunto.get(punto).add(userId);
+            return true;
+        }// Registrar que el usuario ha pasado por este punto
     }
 
     @Override

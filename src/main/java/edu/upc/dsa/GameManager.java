@@ -13,7 +13,7 @@ public interface GameManager {
     List<Usuario> getUsersOrderedAlphabetically();
     Usuario getUser(String id);
     void addPointOfInterest(int x, int y, ElementType type);
-    void registerPointVisit(String userId, int x, int y) throws EmptyPointListException;
+    boolean registerPointVisit(String userId, int x, int y) throws EmptyPointListException;
     List<PuntoInteres> getUserVisitedPoints(String userId);
     List<Usuario> getUsersByPoint(int x, int y) throws EmptyPointListException;
     List<PuntoInteres> getPointsByType(ElementType type);

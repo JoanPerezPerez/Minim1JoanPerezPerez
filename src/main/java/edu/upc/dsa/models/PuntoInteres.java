@@ -13,7 +13,7 @@ public class PuntoInteres {
         this.type = type;
     }
 
-    // Getters y Setters
+
     public int getX() {
         return x;
     }
