@@ -5,6 +5,7 @@ public class PuntoInteres {
     private int x; // Coordenada horizontal
     private int y; // Coordenada vertical
     private ElementType type; // Tipo de punto de interés
+    public PuntoInteres() {}
 
     // Constructor
     public PuntoInteres(int x, int y, ElementType type) {

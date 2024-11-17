@@ -29,6 +29,10 @@ public class GameService {
             this.gm.addUser("s123", "Manolo", "Lopez", "17/12/2023");
             this.gm.addUser("s124", "Joan", "Lopez", "17/12/2023");
             this.gm.addUser("s125", "Alex", "Lopez", "17/12/2023");
+            this.gm.addPointOfInterest(0, 0, ElementType.GRASS);
+            this.gm.addPointOfInterest(1, 1, ElementType.DOOR);
+            this.gm.addPointOfInterest(2, 2, ElementType.POTION);
+            this.gm.addPointOfInterest(3, 3, ElementType.COIN);
         }
     }
 
@@ -81,19 +85,27 @@ public class GameService {
     @POST
     @ApiOperation(value = "Añadir punto de interés", notes = "Crea un nuevo punto de interés en unas coordenadas específicas")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Punto de interés agragado de forma correcta"),
-            @ApiResponse(code = 400, message = "Parametros invalidos")
+            @ApiResponse(code = 201, message = "Punto de interés agregado de forma correcta"),
+            @ApiResponse(code = 400, message = "Parámetros inválidos"),
+            @ApiResponse(code = 500, message = "Error interno del servidor")
     })
     @Path("/points")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response addPoint(PuntoInteres point) {
         try {
+            if (point == null || point.getType() == null) {
+                return Response.status(400).entity("Faltan parámetros o el tipo es inválido").build();
+            }
+
             this.gm.addPointOfInterest(point.getX(), point.getY(), point.getType());
-            return Response.status(201).entity("Punto de interés agragado de forma correcta").build();
+            return Response.status(201).entity("Punto de interés agregado de forma correcta").build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(400).entity("Parámetros inválidos: " + e.getMessage()).build();
         } catch (Exception e) {
-            return Response.status(400).entity("Parametros invalidos").build();
+            return Response.status(500).entity("Error interno del servidor").build();
         }
     }
+
 
     @GET
     @ApiOperation(value = "Obtener puntos por tipo", notes = "Retorna todos los puntos de interés para un tipo específico")
@@ -113,35 +125,36 @@ public class GameService {
     }
 
     @GET
-    @ApiOperation(value = "Obtener puntos visitados por un usuario", notes = "Retorna los puntos visitados por un usuario")
+    @ApiOperation(value = "get Puntos Pasados User", notes = "asdasd")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Correcto", response = PuntoInteres.class, responseContainer = "Lista"),
-            @ApiResponse(code = 404, message = "No se han encontrado puntos para este usuario")
+            @ApiResponse(code = 201, message = "Successful", response = PuntoInteres.class,responseContainer="List"),
+            @ApiResponse(code = 404, message = "User Not Found")
     })
-    @Path("/users/{id}/points")
+    @Path("/puntosInteres/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPointsByUser(@PathParam("id") String userId) {
-        List<PuntoInteres> visitedPoints = this.gm.getUserVisitedPoints(userId);
-        if (visitedPoints == null || visitedPoints.isEmpty()) {
-            return Response.status(404).entity("No se han encontrado puntos para este usuario").build();
-        }
-        GenericEntity<List<PuntoInteres>> entity = new GenericEntity<List<PuntoInteres>>(visitedPoints) {};
-        return Response.status(200).entity(entity).build();
+    public Response getPuntosUsuario(@PathParam("id") String id) {
+        List<PuntoInteres> puntos;
+        puntos = gm.getUserVisitedPoints(id);
+        GenericEntity<List<PuntoInteres>> entity = new GenericEntity<List<PuntoInteres>>(puntos) {
+        };
+        return Response.status(201).entity(entity).build();
     }
-    @POST
+    @PUT
     @ApiOperation(value = "Registrar usuario a un punto de interés", notes = "Registrar que un usuario ha pasado por un punto de interés")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Visira registrada de forma correcta"),
-            @ApiResponse(code = 404, message = "Usuario o punto de interés no encontrado")
+            @ApiResponse(code = 201, message = "Visira registrada de forma correcta", response = PuntoInteres.class),
+            @ApiResponse(code = 404, message = "Usuario o punto de interés no encontrado"),
+            @ApiResponse(code = 500, message = "Punto No Existente")
     })
     @Path("/users/{id}/points/{x}/{y}")
+    @Consumes(MediaType.APPLICATION_JSON)
     public Response registerUserVisit(@PathParam("id") String userId, @PathParam("x") int x, @PathParam("y") int y) {
         try {
             boolean success = this.gm.registerPointVisit(userId,x,y);
             if (!success) {
                 return Response.status(404).entity("Usuario o punto de interés no encontrado").build();
             }
-            return Response.status(200).entity("Visita registrada de forma corracta").build();
+            return Response.status(201).entity("Visita registrada de forma corracta").build();
         } catch (Exception e) {
             return Response.status(500).entity("Error registrando la visita").build();
         } catch (EmptyPointListException e) {
@@ -164,6 +177,4 @@ public class GameService {
         GenericEntity<List<Usuario>> entity = new GenericEntity<List<Usuario>>(users) {};
         return Response.status(200).entity(entity).build();
     }
-
-
 }

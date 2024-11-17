@@ -78,9 +78,9 @@ public class GameManagerTest {
     @Test
     public void puntosInteresElementType() {
         this.gm.addPointOfInterest(0, 0, ElementType.GRASS);
-        this.gm.addPointOfInterest(1, 1, ElementType.TREE);
-        this.gm.addPointOfInterest(2, 2, ElementType.GRASS);
-        this.gm.addPointOfInterest(3, 3, ElementType.BRIDGE);
+        this.gm.addPointOfInterest(1, 1, ElementType.DOOR);
+        this.gm.addPointOfInterest(2, 2, ElementType.POTION);
+        this.gm.addPointOfInterest(3, 3, ElementType.COIN);
 
         // Invocar el método para obtener puntos del tipo GRASS
         List<PuntoInteres> puntosGrass = gm.getPointsByType(ElementType.GRASS);
@@ -90,8 +90,8 @@ public class GameManagerTest {
         Assert.assertNotNull("La lista de puntos tipo GRASS no debería ser nula", puntosGrass);
         Assert.assertNotNull("La lista de puntos tipo GRASS no debería ser nula", puntosBridge);
         // Verificar el tamaño de la lista
-        Assert.assertEquals("El número de puntos tipo GRASS no es el esperado", 3, puntosGrass.size());
-        Assert.assertEquals("El número de puntos tipo GRASS no es el esperado", 2, puntosBridge.size());
+        Assert.assertEquals("El número de puntos tipo GRASS no es el esperado", 2, puntosGrass.size());
+        Assert.assertEquals("El número de puntos tipo GRASS no es el esperado", 1, puntosBridge.size());
         // Verificar que todos los puntos sean del tipo GRASS
         for (PuntoInteres punto : puntosGrass) {
             Assert.assertEquals("El tipo del punto no es GRASS", ElementType.GRASS, punto.getType());

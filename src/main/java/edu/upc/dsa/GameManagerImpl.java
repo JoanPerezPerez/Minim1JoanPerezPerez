@@ -56,6 +56,7 @@ public class GameManagerImpl implements GameManager {
     public void addPointOfInterest(int x, int y, ElementType type) {
         logger.info("addPointOfInterest - Ingreso: x=" + x + ", y=" + y + ", type=" + type);
         try {
+
             registro.addPointOfInterest(x, y, type);
             logger.info("addPointOfInterest - Punto de interés agregado: (" + x + "," + y + ")");
         } catch (Exception e) {
