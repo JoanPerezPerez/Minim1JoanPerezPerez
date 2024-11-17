@@ -132,12 +132,19 @@ public class GameService {
     })
     @Path("/puntosInteres/{id}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response getPuntosUsuario(@PathParam("id") String id) {
+    public Response getPuntosUsuario(@PathParam("id") String id) throws EmptyPointListException {
         List<PuntoInteres> puntos;
         puntos = gm.getUserVisitedPoints(id);
+        if (puntos == null){
+            throw new EmptyPointListException("No hay puntos para este usuario");
+        }
+        else{
+
+
+
         GenericEntity<List<PuntoInteres>> entity = new GenericEntity<List<PuntoInteres>>(puntos) {
         };
-        return Response.status(201).entity(entity).build();
+        return Response.status(201).entity(entity).build();}
     }
     @PUT
     @ApiOperation(value = "Registrar usuario a un punto de interés", notes = "Registrar que un usuario ha pasado por un punto de interés")
